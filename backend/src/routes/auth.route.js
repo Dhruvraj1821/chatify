@@ -1,8 +1,14 @@
 import express from "express";
 import { signup, login, logout, updateProfile } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
+import { arcjetProtection } from "../middleware/arcjet.middleware.js";
+import { ENV } from "../lib/env.js";
 
 const router = express.Router();
+
+if(ENV.ARCJET_ENV==="PRODUCTION"){
+    router.use(arcjetProtection);
+}
 
 router.post("/signup", signup);
 
