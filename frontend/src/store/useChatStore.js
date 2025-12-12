@@ -94,25 +94,43 @@ export const useChatStore = create((set, get) => ({
     if (!selectedUser) return;
 
     const socket = useAuthStore.getState().socket;
+    if (!socket) return;
 
-    socket.on("newMessage", (newMessage) => {
-      const isMessageSentFromSelectedUser = newMessage.senderId === selectedUser._id;
-      if (!isMessageSentFromSelectedUser) return;
+    const handleNewMessage = (newMessage) => {
+      // Check if message is from or to the selected user
+      const isRelevantMessage = 
+        newMessage.senderId.toString() === selectedUser._id.toString() ||
+        newMessage.receiverId.toString() === selectedUser._id.toString();
 
+      if (!isRelevantMessage) return;
+
+      // Check if message already exists (avoid duplicates)
       const currentMessages = get().messages;
-      set({ messages: [...currentMessages, newMessage] });
+      const messageExists = currentMessages.some(
+        msg => msg._id.toString() === newMessage._id.toString()
+      );
 
-      if (isSoundEnabled) {
-        const notificationSound = new Audio("/sounds/notification.mp3");
+      if (!messageExists) {
+        set({ messages: [...currentMessages, newMessage] });
 
-        notificationSound.currentTime = 0; // reset to start
-        notificationSound.play().catch((e) => console.log("Audio play failed:", e));
+        // Play sound if message is from selected user (not from current user)
+        const { authUser } = useAuthStore.getState();
+        if (isSoundEnabled && newMessage.senderId.toString() === selectedUser._id.toString() && 
+            newMessage.senderId.toString() !== authUser._id.toString()) {
+          const notificationSound = new Audio("/sounds/notification.mp3");
+          notificationSound.currentTime = 0;
+          notificationSound.play().catch((e) => console.log("Audio play failed:", e));
+        }
       }
-    });
+    };
+
+    socket.on("newMessage", handleNewMessage);
   },
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
-    socket.off("newMessage");
+    if (socket) {
+      socket.off("newMessage");
+    }
   },
 }));

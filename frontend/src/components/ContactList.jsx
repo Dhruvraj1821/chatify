@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 import UsersLoadingSkeleton from "./UsersLoadingSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
+import Avatar from "./Avatar";
 
 function ContactList() {
   const { getAllContacts, allContacts, setSelectedUser, isUsersLoading } = useChatStore();
@@ -23,9 +24,12 @@ function ContactList() {
         >
           <div className="flex items-center gap-3">
             <div className={`avatar ${onlineUsers.includes(contact._id) ? "online" : "offline"}`}>
-              <div className="size-12 rounded-full">
-                <img src={contact.profilePic || "/avatar.png"} />
-              </div>
+              <Avatar
+                src={contact.profilePic}
+                alt={contact.fullName}
+                name={contact.fullName}
+                size="size-12"
+              />
             </div>
             <h4 className="text-slate-200 font-medium">{contact.fullName}</h4>
           </div>

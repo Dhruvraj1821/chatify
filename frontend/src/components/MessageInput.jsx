@@ -29,8 +29,19 @@ function MessageInput() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+
+    // Check if file is an image
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
+      return;
+    }
+
+    // Check file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      toast.error("Image size must be less than 5MB");
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 

@@ -6,10 +6,35 @@ import { Link } from "react-router";
 
 function LoginPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({});
   const { login, isLoggingIn } = useAuthStore();
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       await login(formData);
       // Navigation will be handled by route protection in App.jsx
@@ -44,11 +69,18 @@ function LoginPage() {
                       <input
                         type="email"
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, email: e.target.value });
+                          if (errors.email) setErrors({ ...errors, email: "" });
+                        }}
                         className="input"
                         placeholder="johndoe@gmail.com"
+                        required
                       />
                     </div>
+                    {errors.email && (
+                      <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+                    )}
                   </div>
 
                   {/* PASSWORD INPUT */}
@@ -60,11 +92,18 @@ function LoginPage() {
                       <input
                         type="password"
                         value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, password: e.target.value });
+                          if (errors.password) setErrors({ ...errors, password: "" });
+                        }}
                         className="input"
                         placeholder="Enter your password"
+                        required
                       />
                     </div>
+                    {errors.password && (
+                      <p className="text-red-400 text-sm mt-1">{errors.password}</p>
+                    )}
                   </div>
 
                   {/* SUBMIT BUTTON */}
@@ -87,12 +126,10 @@ function LoginPage() {
 
             {/* FORM ILLUSTRATION - RIGHT SIDE */}
             <div className="hidden md:w-1/2 md:flex items-center justify-center p-6 bg-gradient-to-bl from-slate-800/20 to-transparent">
-              <div>
-                <img
-                  src="/login.png"
-                  alt="People using mobile devices"
-                  className="w-full h-auto object-contain"
-                />
+              <div className="w-full">
+                <div className="w-full h-64 bg-gradient-to-br from-cyan-500/20 to-pink-500/20 rounded-lg flex items-center justify-center mb-6">
+                  <MessageCircleIcon className="w-32 h-32 text-cyan-400/50" />
+                </div>
                 <div className="mt-6 text-center">
                   <h3 className="text-xl font-medium text-cyan-400">Connect anytime, anywhere</h3>
 
