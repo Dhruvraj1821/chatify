@@ -69,17 +69,22 @@ export const useChatStore = create((set, get) => ({
       text: messageData.text,
       image: messageData.image,
       createdAt: new Date().toISOString(),
-      isOptimistic: true, // flag to identify optimistic messages (optional)
+      isOptimistic: true, // flag to identify optimistic messages
     };
-    // immidetaly update the ui by adding the message
+    // immediately update the ui by adding the message
     set({ messages: [...messages, optimisticMessage] });
 
     try {
       const res = await axiosInstance.post(`/messages/send/${selectedUser._id}`, messageData);
-      set({ messages: messages.concat(res.data) });
+      // Remove optimistic message and add the real one from server
+      const updatedMessages = messages
+        .filter(msg => !msg.isOptimistic || msg._id !== tempId)
+        .concat(res.data);
+      set({ messages: updatedMessages });
     } catch (error) {
       // remove optimistic message on failure
-      set({ messages: messages });
+      const updatedMessages = messages.filter(msg => !msg.isOptimistic || msg._id !== tempId);
+      set({ messages: updatedMessages });
       toast.error(error.response?.data?.message || "Something went wrong");
     }
   },

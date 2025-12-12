@@ -8,9 +8,14 @@ function LoginPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const { login, isLoggingIn } = useAuthStore();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login(formData);
+    try {
+      await login(formData);
+      // Navigation will be handled by route protection in App.jsx
+    } catch (error) {
+      // Error is already handled in the store with toast
+    }
   };
 
   return (

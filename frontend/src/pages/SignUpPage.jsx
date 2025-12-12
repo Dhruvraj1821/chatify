@@ -8,9 +8,14 @@ function SignUpPage() {
   const [formData, setFormData] = useState({ fullName: "", email: "", password: "" });
   const { signup, isSigningUp } = useAuthStore();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    signup(formData);
+    try {
+      await signup(formData);
+      // Navigation will be handled by route protection in App.jsx
+    } catch (error) {
+      // Error is already handled in the store with toast
+    }
   };
 
   return (
