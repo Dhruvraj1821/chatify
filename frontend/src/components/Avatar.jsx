@@ -2,6 +2,7 @@ import { useState } from "react";
 
 function Avatar({ src, alt, name, className = "", size = "size-12" }) {
   const [imageError, setImageError] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   // Generate initials from name
   const getInitials = (name) => {
@@ -38,13 +39,24 @@ function Avatar({ src, alt, name, className = "", size = "size-12" }) {
   };
 
   if (imageError || !src) {
+    // Use default avatar image, fallback to initials if that fails
+    if (avatarError) {
+      return (
+        <div
+          className={`${size} ${className} rounded-full ${getColorFromName(name)} flex items-center justify-center text-white font-semibold text-sm`}
+          title={alt || name}
+        >
+          {getInitials(name)}
+        </div>
+      );
+    }
     return (
-      <div
-        className={`${size} ${className} rounded-full ${getColorFromName(name)} flex items-center justify-center text-white font-semibold text-sm`}
-        title={alt || name}
-      >
-        {getInitials(name)}
-      </div>
+      <img
+        src="/avatar.png"
+        alt={alt || name}
+        className={`${size} ${className} rounded-full object-cover`}
+        onError={() => setAvatarError(true)}
+      />
     );
   }
 

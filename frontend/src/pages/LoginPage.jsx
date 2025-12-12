@@ -127,7 +127,17 @@ function LoginPage() {
             {/* FORM ILLUSTRATION - RIGHT SIDE */}
             <div className="hidden md:w-1/2 md:flex items-center justify-center p-6 bg-gradient-to-bl from-slate-800/20 to-transparent">
               <div className="w-full">
-                <div className="w-full h-64 bg-gradient-to-br from-cyan-500/20 to-pink-500/20 rounded-lg flex items-center justify-center mb-6">
+                <img
+                  src="/login.png"
+                  alt="People using mobile devices"
+                  className="w-full h-auto object-contain mb-6"
+                  onError={(e) => {
+                    // Fallback to gradient if image fails to load
+                    e.target.style.display = 'none';
+                    e.target.nextElementSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="w-full h-64 bg-gradient-to-br from-cyan-500/20 to-pink-500/20 rounded-lg flex items-center justify-center mb-6 hidden">
                   <MessageCircleIcon className="w-32 h-32 text-cyan-400/50" />
                 </div>
                 <div className="mt-6 text-center">
