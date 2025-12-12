@@ -1,9 +1,10 @@
 import { useRef } from "react";
 
 const keyboardSounds = [
-  "/sounds/key1.mp3",
-  "/sounds/key2.mp3",
-  "/sounds/key3.mp3",
+  "/sounds/keystroke1.mp3",
+  "/sounds/keystroke2.mp3",
+  "/sounds/keystroke3.mp3",
+  "/sounds/keystroke4.mp3",
 ];
 
 export default function useKeyboardSound() {

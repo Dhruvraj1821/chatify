@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import { LogOutIcon, VolumeOffIcon, Volume2Icon } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
+import toast from "react-hot-toast";
+import Avatar from "./Avatar";
 
 const mouseClickSound = new Audio("/sounds/mouse-click.mp3");
 
@@ -15,6 +17,21 @@ function ProfileHeader() {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    // Check if file is an image
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    // Check file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      toast.error("Image size must be less than 5MB");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
 
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -36,10 +53,12 @@ function ProfileHeader() {
               className="size-14 rounded-full overflow-hidden relative group"
               onClick={() => fileInputRef.current.click()}
             >
-              <img
-                src={selectedImg || authUser.profilePic || "/avatar.png"}
+              <Avatar
+                src={selectedImg || authUser?.profilePic}
                 alt="User image"
-                className="size-full object-cover"
+                name={authUser?.fullName}
+                className="size-full"
+                size="size-14"
               />
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                 <span className="text-white text-xs">Change</span>
